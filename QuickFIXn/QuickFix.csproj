@@ -1,7 +1,5 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFrameworks>net452;netstandard2.0</TargetFrameworks>
     <Title>QuickFIX/n</Title>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageTitle>QuickFIX/n</PackageTitle>
@@ -11,14 +9,12 @@
     <Version>1.8.0</Version>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <RootNamespace>QuickFix</RootNamespace>
+    <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup Condition="'$(TargetFramework)' == 'net452'">
     <Reference Include="System.Web" />
   </ItemGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
     <DefineConstants>$(DefineConstants);MISSING_SYSTEMWEBUI</DefineConstants>
   </PropertyGroup>
-
 </Project>
