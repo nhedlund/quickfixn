@@ -651,6 +651,8 @@ namespace QuickFix
             }
             catch (UnsupportedVersion e)
             {
+                SessionLog.OnEvent(e.Message);
+
                 if (MsgType.LOGOUT.Equals(msgBuilder.MsgType.Obj))
                 {
                     NextLogout(message);
