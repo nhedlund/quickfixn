@@ -32,7 +32,7 @@ namespace QuickFix
         private Thread thread_ = null;
         private volatile bool isShutdownRequested_ = false;
         private SocketReader socketReader_;
-        private FileLog log_;
+        private FileSessionLog _sessionLog;
 
         [Obsolete("Don't use this constructor")]
         public ClientHandlerThread(TcpClient tcpClient, long clientId)
@@ -62,7 +62,7 @@ namespace QuickFix
                 debugLogFilePath = settingsDict.GetString(SessionSettings.FILE_LOG_PATH);
 
             // FIXME - do something more flexible than hardcoding a filelog
-            log_ = new FileLog(debugLogFilePath, new SessionID("ClientHandlerThread", clientId.ToString(), "Debug"));
+            _sessionLog = new FileSessionLog(debugLogFilePath, new SessionID("ClientHandlerThread", clientId.ToString(), "Debug"));
 
             this.Id = clientId;
             socketReader_ = new SocketReader(tcpClient, socketSettings, this);
@@ -116,16 +116,16 @@ namespace QuickFix
         /// FIXME do real logging
         public void Log(string s)
         {
-            log_.OnEvent(s);
+            _sessionLog.OnEvent(s);
         }
 
         /// <summary>
         /// Provide StreamReader with access to the log
         /// </summary>
         /// <returns></returns>
-        internal ILog GetLog()
+        internal ISessionLog GetLog()
         {
-            return log_;
+            return _sessionLog;
         }
 
         #region Responder Members
@@ -150,10 +150,10 @@ namespace QuickFix
                 socketReader_ = null;
             }
 
-            if (log_ != null)
+            if (_sessionLog != null)
             {
-                log_.Dispose();
-                log_ = null;
+                _sessionLog.Dispose();
+                _sessionLog = null;
             }
         }
     }

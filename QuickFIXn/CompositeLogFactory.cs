@@ -20,9 +20,9 @@ namespace QuickFix
         /// </summary>
         /// <param name="sessionID">session ID for the message store</param>
         /// <returns></returns>
-        public ILog Create(SessionID sessionID)
+        public ISessionLog Create(SessionID sessionID)
         {
-            return new CompositeLog(factories_.Select(f => f.Create(sessionID)).ToArray());
+            return new CompositeSessionLog(factories_.Select(f => f.Create(sessionID)).ToArray());
         }
     }
 }

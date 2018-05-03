@@ -24,7 +24,7 @@ namespace QuickFix.Transport
         /// <param name="settings">The socket settings.</param>
         /// <param name="logger">Logger to use.</param>
         /// <returns>an opened and initiated stream which can be read and written to</returns>
-        public static Stream CreateClientStream(IPEndPoint endpoint, SocketSettings settings, ILog logger)
+        public static Stream CreateClientStream(IPEndPoint endpoint, SocketSettings settings, ISessionLog logger)
         {
             var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             socket.NoDelay = settings.SocketNodelay;
@@ -56,7 +56,7 @@ namespace QuickFix.Transport
         /// <param name="logger">Logger to use.</param>
         /// <returns>an opened and initiated stream which can be read and written to</returns>
         /// <exception cref="System.ArgumentException">tcp client must be connected in order to get stream;tcpClient</exception>
-        public static Stream CreateServerStream(TcpClient tcpClient, SocketSettings settings, ILog logger)
+        public static Stream CreateServerStream(TcpClient tcpClient, SocketSettings settings, ISessionLog logger)
         {
             if (tcpClient.Connected == false)
                 throw new ArgumentException("tcp client must be connected in order to get stream", "tcpClient");
@@ -173,14 +173,14 @@ namespace QuickFix.Transport
         /// </summary>
         private sealed class SSLStreamFactory
         {
-            ILog log_;
+            ISessionLog _sessionLog;
             SocketSettings socketSettings_;
             const string clientAuthenticationOid = "1.3.6.1.5.5.7.3.2";
             const string serverAuthenticationOid = "1.3.6.1.5.5.7.3.1";
 
-            public SSLStreamFactory(ILog log, SocketSettings settings)
+            public SSLStreamFactory(ISessionLog sessionLog, SocketSettings settings)
             {
-                log_ = log;
+                _sessionLog = sessionLog;
                 socketSettings_ = settings;
             }
 
@@ -204,7 +204,7 @@ namespace QuickFix.Transport
                 }
                 catch (System.Security.Authentication.AuthenticationException ex)
                 {
-                    log_.OnEvent("Unable to perform authentication against server: " + ex.Message);
+                    _sessionLog.OnEvent("Unable to perform authentication against server: " + ex.Message);
                     throw;
                 }
 
@@ -234,7 +234,7 @@ namespace QuickFix.Transport
                 }
                 catch (System.Security.Authentication.AuthenticationException ex)
                 {
-                    log_.OnEvent("Unable to perform authentication against server: " + ex.Message);
+                    _sessionLog.OnEvent("Unable to perform authentication against server: " + ex.Message);
                     throw;
                 }
 
@@ -300,9 +300,9 @@ namespace QuickFix.Transport
                 if (!ContainsEnhancedKeyUsage(certificate, enhancedKeyUsage))
                 {
                     if (enhancedKeyUsage == clientAuthenticationOid)
-                        log_.OnEvent("Remote certificate is not intended for client authentication: It is missing enhanced key usage " + enhancedKeyUsage);
+                        _sessionLog.OnEvent("Remote certificate is not intended for client authentication: It is missing enhanced key usage " + enhancedKeyUsage);
                     else
-                        log_.OnEvent("Remote certificate is not intended for server authentication: It is missing enhanced key usage " + enhancedKeyUsage);
+                        _sessionLog.OnEvent("Remote certificate is not intended for server authentication: It is missing enhanced key usage " + enhancedKeyUsage);
 
                     return false;
                 }
@@ -329,7 +329,7 @@ namespace QuickFix.Transport
                 // Any basic authentication check failed, do after checking CA
                 if (sslPolicyErrors != SslPolicyErrors.None)
                 {
-                    log_.OnEvent("Remote certificate was not recognized as a valid certificate: " + sslPolicyErrors);
+                    _sessionLog.OnEvent("Remote certificate was not recognized as a valid certificate: " + sslPolicyErrors);
                     return false;
                 }
 

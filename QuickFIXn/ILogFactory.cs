@@ -17,6 +17,6 @@ namespace QuickFix
         /// </summary>
         /// <param name="sessionID">session ID usually used for configuration access</param>
         /// <returns></returns>
-        ILog Create(SessionID sessionID);
+        ISessionLog Create(SessionID sessionID);
     }
 }

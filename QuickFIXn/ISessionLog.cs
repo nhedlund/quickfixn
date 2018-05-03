@@ -3,15 +3,9 @@
 namespace QuickFix
 {
     /// <summary>
-    /// (Renamed per naming convention.)
-    /// </summary>
-    [System.Obsolete("Use ILog instead.")]
-    public interface Log : ILog { }
-
-    /// <summary>
     /// Session log for messages and events
     /// </summary>
-    public interface ILog : IDisposable
+    public interface ISessionLog : IDisposable
     {
         /// <summary>
         /// Clears the log and removes any persistent log data

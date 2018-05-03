@@ -4,7 +4,7 @@ namespace QuickFix
     /// <summary>
     /// File log implementation
     /// </summary>
-    public class FileLog : ILog, System.IDisposable
+    public class FileSessionLog : ISessionLog, System.IDisposable
     {
         private object sync_ = new object();
 
@@ -16,12 +16,12 @@ namespace QuickFix
 
         private bool _disposed = false;
 
-        public FileLog(string fileLogPath)
+        public FileSessionLog(string fileLogPath)
         {
             Init(fileLogPath, "GLOBAL");
         }
 
-        public FileLog(string fileLogPath, SessionID sessionID)
+        public FileSessionLog(string fileLogPath, SessionID sessionID)
         {
             Init(fileLogPath, Prefix(sessionID));
         }   

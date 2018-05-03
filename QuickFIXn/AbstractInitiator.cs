@@ -67,9 +67,6 @@ namespace QuickFix
                 CreateSession(sessionID, dict);
             }
 
-            if (0 == sessions_.Count)
-                throw new ConfigError("No sessions defined for initiator");
-
             // start it up
             isStopped_ = false;
             OnConfigure(_settings);

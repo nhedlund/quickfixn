@@ -15,7 +15,7 @@ namespace QuickFix
 
         private string name_;
         private System.Collections.Generic.Dictionary<string, string> data_ = new System.Collections.Generic.Dictionary<string, string>();
-    
+
         #endregion
 
         #region Properties
@@ -25,7 +25,7 @@ namespace QuickFix
             get { return name_; }
             private set { name_ = value; }
         }
-        
+
         public int Count
         {
             get { return data_.Count; }
@@ -38,7 +38,7 @@ namespace QuickFix
         {
             get { return Count; }
         }
-        
+
         #endregion
 
         #region Public Methods

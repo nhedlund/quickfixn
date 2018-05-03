@@ -26,7 +26,7 @@ namespace QuickFix
 
         #region LogFactory Members
 
-        public ILog Create(SessionID sessionID)
+        public ISessionLog Create(SessionID sessionID)
         {
             bool logIncoming = logIncoming_;
             bool logOutgoing = logOutgoing_;
@@ -43,7 +43,7 @@ namespace QuickFix
                     logEvent = dict.GetBool(SCREEN_LOG_SHOW_EVENTS);
             }
 
-            return new ScreenLog(sessionID, logIncoming, logOutgoing, logEvent);
+            return new ScreenSessionLog(sessionID, logIncoming, logOutgoing, logEvent);
         }
 
         #endregion
