@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading;
 using QuickFix.Fields;
 
@@ -13,6 +14,8 @@ namespace QuickFix
     /// </summary>
     public class DefaultMessageFactory : IMessageFactory
     {
+        private static readonly ILog Log = LogProvider.For<DefaultMessageFactory>();
+        private static readonly Regex QuickFixMessageFactoryAssemblyNameRegex = new Regex(".*quickfix.*\\.dll$", RegexOptions.IgnoreCase);
         private static int _dllLoadFlag;
         private readonly IReadOnlyDictionary<string, IMessageFactory> _factories;
 
@@ -35,7 +38,7 @@ namespace QuickFix
         /// <param name="factories">IMessageFactory instances</param>
         public DefaultMessageFactory(IEnumerable<IMessageFactory> factories)
         {
-            _factories = ConvertToDictionary(factories);
+            _factories = ConvertToDictionary(factories.ToList());
         }
 
         /// <summary>
@@ -46,7 +49,7 @@ namespace QuickFix
         /// <param name="assemblies">Assemblies that may contain IMessageFactory implementations</param>
         public DefaultMessageFactory(IEnumerable<Assembly> assemblies)
         {
-            var factories = GetMessageFactories(assemblies);
+            var factories = GetMessageFactories(assemblies.ToList());
             _factories = ConvertToDictionary(factories);
         }
 
@@ -73,7 +76,7 @@ namespace QuickFix
             else
             {
                 var message = new Message();
-                message.Header.SetField(new StringField(QuickFix.Fields.Tags.MsgType, msgType));
+                message.Header.SetField(new StringField(Tags.MsgType, msgType));
                 return message;
             }
         }
@@ -91,10 +94,16 @@ namespace QuickFix
             {
                 return factory.Create(beginString, msgType, groupCounterTag);
             }
-            else
-            {
-                throw new UnsupportedVersion(beginString);
-            }
+
+            var supportedBeginStrings = _factories.Values
+                .SelectMany(f => f.GetSupportedBeginStrings())
+                .Distinct()
+                .OrderBy(s => s)
+                .ToList();
+
+            var supported = supportedBeginStrings.Any() ? supportedBeginStrings.Aggregate((s1, s2) => $"{s1}, {s2}") : "None";
+
+            throw new UnsupportedVersion($"{beginString}. Supported beginStrings: {supported}");
         }
 
         #endregion
@@ -140,42 +149,60 @@ namespace QuickFix
                     return;
                 }
 
-                var dlls = Directory.GetFiles(directory, "quickfix.*.dll");
+                var dlls = Directory.GetFiles(directory).Where(p => QuickFixMessageFactoryAssemblyNameRegex.IsMatch(p));
+
                 foreach (var path in dlls)
                 {
                     Assembly.LoadFrom(path);
+                    Log.Debug($"Loaded QuickFix assembly: {Path.GetFileName(path)}");
                 }
             }
             catch (Exception ex)
             {
-                Console.Error.WriteLine("Found quickfix.*.dll dlls but failed to load them, " + ex);
+                Log.ErrorException("Found quickfix.*.dll dlls but failed to load them.", ex);
             }
         }
 
-        private static ICollection<IMessageFactory> GetMessageFactories(IEnumerable<Assembly> assemblies)
+        private static ICollection<IMessageFactory> GetMessageFactories(IList<Assembly> assemblies)
         {
             var factoryTypes = assemblies
                 .SelectMany(assembly => assembly.GetExportedTypes())
                 .Where(IsMessageFactory)
                 .ToList();
+
+            if (factoryTypes.Count == 0)
+            {
+                var assemblyNames = assemblies
+                    .Select(a => a.GetName().Name)
+                    .Where(a => !a.StartsWith("System.") && !a.StartsWith("Microsoft."))
+                    .OrderBy(n => n)
+                    .Aggregate((s1, s2) => $"{s1}\n{s2}");
+
+                Log.Info($"Scanned assemblies:\n{assemblyNames}");
+                Log.Error("Could not find any assemblies with QuickFix IMessageFactory classes.");
+            }
+
             var factories = new List<IMessageFactory>();
             foreach (var factoryType in factoryTypes)
             {
                 var factory = (IMessageFactory)Activator.CreateInstance(factoryType);
+
                 factories.Add(factory);
             }
 
             return factories;
         }
 
-        private static ICollection<Assembly> GetAppDomainAssemblies()
+        private static IList<Assembly> GetAppDomainAssemblies()
         {
             LoadLocalDlls();
+
             var assemblies = AppDomain
                 .CurrentDomain
                 .GetAssemblies()
                 .Where(assembly => !assembly.IsDynamic)
                 .ToList();
+
             return assemblies;
         }
 
