@@ -36,7 +36,7 @@ namespace QuickFix
             private Dictionary<SessionID, Session> acceptedSessions_ = new Dictionary<SessionID, Session>();
 
             #endregion
-            
+
             public AcceptorSocketDescriptor(IPEndPoint socketEndPoint, SocketSettings socketSettings, QuickFix.Dictionary sessionDict)
             {
                 socketEndPoint_ = socketEndPoint;
@@ -106,14 +106,12 @@ namespace QuickFix
         {
             sessionFactory_ = sessionFactory;
             settings_ = settings;
+
             foreach (SessionID sessionID in settings.GetSessions())
             {
                 QuickFix.Dictionary dict = settings.Get(sessionID);
                 CreateSession(sessionID, dict);
             }
-
-            if (0 == socketDescriptorForAddress_.Count)
-                throw new ConfigError("No acceptor sessions found in SessionSettings.");
         }
 
         private AcceptorSocketDescriptor GetAcceptorSocketDescriptor(Dictionary dict)
@@ -124,7 +122,7 @@ namespace QuickFix
             IPEndPoint socketEndPoint;
             if (dict.Has(SessionSettings.SOCKET_ACCEPT_HOST))
             {
-                string host = dict.GetString(SessionSettings.SOCKET_ACCEPT_HOST);                
+                string host = dict.GetString(SessionSettings.SOCKET_ACCEPT_HOST);
                 IPAddress[] addrs = Dns.GetHostAddresses(host);
                 socketEndPoint = new IPEndPoint(addrs[0], port);
                 // Set hostname (if it is not already configured)
@@ -136,7 +134,7 @@ namespace QuickFix
             }
 
             socketSettings.Configure(dict);
-            
+
 
             AcceptorSocketDescriptor descriptor;
             if (!socketDescriptorForAddress_.TryGetValue(socketEndPoint, out descriptor))
@@ -244,7 +242,7 @@ namespace QuickFix
             while(sessions.Count > 0)
             {
                 Thread.Sleep(100);
-                
+
                 int elapsed = System.Environment.TickCount - start;
                 Iterator<Session> sessionItr = loggedOnSessions.iterator();
                 while (sessionItr.hasNext())
