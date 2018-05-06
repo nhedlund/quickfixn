@@ -8,9 +8,9 @@ namespace AcceptanceTest
         public event System.Action StopMeEvent;
 
         private HashSet<KeyValuePair<string, SessionID>> clOrdIDs_ = new HashSet<KeyValuePair<string, SessionID>>();
-        private FileLog log_;
+        private FileSessionLog log_;
 
-        public ATApplication(FileLog debugLog)
+        public ATApplication(FileSessionLog debugLog)
         {
             log_ = debugLog;
         }
