@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
+﻿using System.IO;
 using NUnit.Framework;
 
 namespace UnitTests
@@ -10,7 +6,7 @@ namespace UnitTests
     [TestFixture]
     public class FileLogTests
     {
-        QuickFix.FileLog log;
+        QuickFix.FileSessionLog log;
 
         [SetUp]
         public void setup()
@@ -32,18 +28,18 @@ namespace UnitTests
             QuickFix.SessionID someSessionID = new QuickFix.SessionID("FIX.4.4", "sender", "target");
             QuickFix.SessionID someSessionIDWithQualifier = new QuickFix.SessionID("FIX.4.3", "sender", "target", "foo");
 
-            Assert.AreEqual("FIX.4.4-sender-target", QuickFix.FileLog.Prefix(someSessionID));
-            Assert.AreEqual("FIX.4.3-sender-target-foo", QuickFix.FileLog.Prefix(someSessionIDWithQualifier));
+            Assert.AreEqual("FIX.4.4-sender-target", QuickFix.FileSessionLog.Prefix(someSessionID));
+            Assert.AreEqual("FIX.4.3-sender-target-foo", QuickFix.FileSessionLog.Prefix(someSessionIDWithQualifier));
         }
 
         [Test]
         public void testPrefixForSubsAndLocation()
         {
             QuickFix.SessionID sessionIDWithSubsAndLocation = new QuickFix.SessionID("FIX.4.2", "SENDERCOMP", "SENDERSUB", "SENDERLOC", "TARGETCOMP", "TARGETSUB", "TARGETLOC");
-            Assert.That(QuickFix.FileLog.Prefix(sessionIDWithSubsAndLocation), Is.EqualTo("FIX.4.2-SENDERCOMP_SENDERSUB_SENDERLOC-TARGETCOMP_TARGETSUB_TARGETLOC"));
+            Assert.That(QuickFix.FileSessionLog.Prefix(sessionIDWithSubsAndLocation), Is.EqualTo("FIX.4.2-SENDERCOMP_SENDERSUB_SENDERLOC-TARGETCOMP_TARGETSUB_TARGETLOC"));
 
             QuickFix.SessionID sessionIDWithSubsNoLocation = new QuickFix.SessionID("FIX.4.2", "SENDERCOMP", "SENDERSUB", "TARGETCOMP", "TARGETSUB");
-            Assert.That(QuickFix.FileLog.Prefix(sessionIDWithSubsNoLocation), Is.EqualTo("FIX.4.2-SENDERCOMP_SENDERSUB-TARGETCOMP_TARGETSUB"));
+            Assert.That(QuickFix.FileSessionLog.Prefix(sessionIDWithSubsNoLocation), Is.EqualTo("FIX.4.2-SENDERCOMP_SENDERSUB-TARGETCOMP_TARGETSUB"));
         }
 
         [Test]
@@ -64,7 +60,7 @@ namespace UnitTests
             settings.Set(sessionID, config);
 
             QuickFix.FileLogFactory factory = new QuickFix.FileLogFactory(settings);
-            log = (QuickFix.FileLog)factory.Create(sessionID);
+            log = (QuickFix.FileSessionLog)factory.Create(sessionID);
 
             log.OnEvent("some event");
             log.OnIncoming("some incoming");

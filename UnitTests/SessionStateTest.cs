@@ -30,7 +30,7 @@ namespace UnitTests
             now = now.AddMilliseconds(heartBtIntMillis);
             Assert.True(SessionState.TimedOut(now, heartBtIntMillis, lastReceivedTime));
         }
-        
+
         [Test]
         public void LogonTimedOut()
         {
@@ -60,8 +60,8 @@ namespace UnitTests
             Assert.False(SessionState.LogoutTimedOut(now, sentLogout, logoutTimeout, lastSentTime));
             now = now.AddMilliseconds(1000);
             Assert.True(SessionState.LogoutTimedOut(now, sentLogout, logoutTimeout, lastSentTime));
-           
-            sentLogout = false; 
+
+            sentLogout = false;
             Assert.False(SessionState.LogoutTimedOut(now, sentLogout, logoutTimeout, lastSentTime));
         }
 
@@ -149,7 +149,7 @@ namespace UnitTests
 
             FileStore store = (FileStore)factory.Create(sessionId);
 
-            NullLog log = new NullLog();
+            NullSessionLog log = new NullSessionLog();
 
             //Set up sessionstate
             SessionState state = new SessionState(log, 1) {MessageStore = store};
