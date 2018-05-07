@@ -114,7 +114,7 @@ namespace QuickFix
         {
             if (_fields.ContainsKey(field.Tag) && !overwrite)
                 return false;
-            
+
             SetField(field);
             return true;
         }
@@ -365,7 +365,7 @@ namespace QuickFix
         {
             try
             {
-                Fields.IField fld = _fields[tag];                
+                Fields.IField fld = _fields[tag];
                 return DateTimeConverter.ConvertToDateOnly(fld.ToString());
             }
             catch (System.Collections.Generic.KeyNotFoundException)
@@ -416,6 +416,16 @@ namespace QuickFix
         }
 
         /// <summary>
+        /// Try get string value of a field or return null if it does not exist.
+        /// </summary>
+        /// <param name="tag">the FIX tag</param>
+        /// <returns>the string value or null</returns>
+        public string TryGetString(int tag)
+        {
+            return IsSetField(tag) ? GetString(tag) : null;
+        }
+
+        /// <summary>
         /// Gets the string value of a field
         /// </summary>
         /// <param name="tag">the FIX tag</param>
@@ -453,6 +463,16 @@ namespace QuickFix
             {
                 throw new FieldNotFoundException(tag);
             }
+        }
+
+        /// <summary>
+        /// Try get decimal value of a field or return null if it does not exist.
+        /// </summary>
+        /// <param name="tag">the FIX tag</param>
+        /// <returns>the decimal value or null</returns>
+        public decimal? TryGetDecimal(int tag)
+        {
+            return IsSetField(tag) ? GetDecimal(tag) : (decimal?) null;
         }
 
         /// <summary>
@@ -602,7 +622,7 @@ namespace QuickFix
                 foreach (Group group in groupList)
                     total += group.CalculateLength();
             }
-    
+
             return total;
         }
 
@@ -617,7 +637,7 @@ namespace QuickFix
         public virtual string CalculateString(StringBuilder sb, int[] preFields)
         {
             HashSet<int> groupCounterTags = new HashSet<int>(_groups.Keys);
-            
+
             foreach (int preField in preFields)
             {
                 if (IsSetField(preField))
