@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace QuickFix
 {
@@ -65,8 +66,8 @@ namespace QuickFix
         public const string IGNORE_POSSDUP_RESEND_REQUESTS = "IgnorePossDupResendRequests";
         public const string RESETSEQUENCE_MESSAGE_REQUIRES_ORIGSENDINGTIME = "RequiresOrigSendingTime";
         public const string CHECK_LATENCY = "CheckLatency";
+        public const string CHECK_SEQUENCE_NUMBERS = "CheckSequenceNumbers";
         public const string MAX_LATENCY = "MaxLatency";
-
 
         public const string SSL_ENABLE = "SSLEnable";
         public const string SSL_SERVERNAME = "SSLServerName";
@@ -108,6 +109,11 @@ namespace QuickFix
             Load(conf);
         }
 
+        public SessionSettings(Dictionary<string, string> defaultSettings, IEnumerable<Dictionary<string, string>> sessionSettings)
+        {
+            Load(new Dictionary("DEFAULT", defaultSettings), new LinkedList<Dictionary>(sessionSettings.Select(ss => new Dictionary("SECTION", ss))));
+        }
+
         public SessionSettings()
         { }
 
@@ -115,20 +121,29 @@ namespace QuickFix
 
         protected void Load(TextReader conf)
         {
-            Settings settings = new Settings(conf);
+            var settings = new Settings(conf);
 
+            // Default section
+            var defaultSections = settings.Get("DEFAULT");
+            var defaultSection = new Dictionary();
+            if (defaultSections.Count > 0)
+                defaultSection = defaultSections.First.Value;
+
+            // Session sections
+            var sessionSections = settings.Get("SESSION");
+
+            Load(defaultSection, sessionSections);
+        }
+
+        protected void Load(Dictionary defaultSettings, LinkedList<Dictionary> sessionSettings)
+        {
             //---- load the DEFAULT section
-            LinkedList<QuickFix.Dictionary> section = settings.Get("DEFAULT");
-            QuickFix.Dictionary def = new QuickFix.Dictionary();
-            if (section.Count > 0)
-                def = section.First.Value;
-            Set(def);
+            Set(defaultSettings);
 
             //---- load each SESSION section
-            section = settings.Get("SESSION");
-            foreach (QuickFix.Dictionary dict in section)
+            foreach (QuickFix.Dictionary dict in sessionSettings)
             {
-                dict.Merge(def);
+                dict.Merge(defaultSettings);
 
                 string sessionQualifier = SessionID.NOT_SET;
                 string senderSubID = SessionID.NOT_SET;

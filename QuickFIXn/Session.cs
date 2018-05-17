@@ -62,6 +62,12 @@ namespace QuickFix
         public bool CheckLatency { get; set; }
 
         /// <summary>
+        /// Check sequence numbers. Should be enabled except for very specific cases like
+        /// ill-behaving market data FIX endpoints.
+        /// </summary>
+        public bool CheckSequenceNumbers { get; set; } = true;
+
+        /// <summary>
         /// Session setting for maximum message latency (in seconds)
         /// </summary>
         public int MaxLatency { get; set; }
@@ -623,8 +629,9 @@ namespace QuickFix
                     NextResendRequest(message);
                 else
                 {
-                    if (!Verify(message))
+                    if (!Verify(message, CheckSequenceNumbers, CheckSequenceNumbers))
                         return;
+
                     state_.IncrNextTargetMsgSeqNum();
                 }
 
@@ -716,7 +723,7 @@ namespace QuickFix
             if (this.RefreshOnLogon)
                 Refresh();
 
-            if (!Verify(logon, false, true))
+            if (!Verify(logon, false, CheckSequenceNumbers))
                 return;
 
             if (!IsGoodTime(logon))
@@ -740,7 +747,7 @@ namespace QuickFix
             state_.ReceivedReset = false;
 
             int msgSeqNum = logon.Header.GetInt(Fields.Tags.MsgSeqNum);
-            if (IsTargetTooHigh(msgSeqNum) && !resetSeqNumFlag.Obj)
+            if (IsTargetTooHigh(msgSeqNum) && !resetSeqNumFlag.Obj && CheckSequenceNumbers)
             {
                 DoTargetTooHigh(logon, msgSeqNum);
             }
@@ -933,7 +940,7 @@ namespace QuickFix
 
         public bool Verify(Message message)
         {
-            return Verify(message, true, true);
+            return Verify(message, CheckSequenceNumbers, CheckSequenceNumbers);
         }
 
         public bool Verify(Message msg, bool checkTooHigh, bool checkTooLow)

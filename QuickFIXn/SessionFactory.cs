@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace QuickFix
 {
@@ -50,7 +51,7 @@ namespace QuickFix
                     throw new ConfigError("ApplVerID is required for FIXT transport");
                 }
                 defaultApplVerID = Message.GetApplVerID(settings.GetString(SessionSettings.DEFAULT_APPLVERID));
-                
+
             }
 
             DataDictionaryProvider dd = new DataDictionaryProvider();
@@ -94,6 +95,8 @@ namespace QuickFix
              */
             if (settings.Has(SessionSettings.CHECK_LATENCY))
                 session.CheckLatency = settings.GetBool(SessionSettings.CHECK_LATENCY);
+            if (settings.Has(SessionSettings.CHECK_SEQUENCE_NUMBERS))
+                session.CheckSequenceNumbers = settings.GetBool(SessionSettings.CHECK_SEQUENCE_NUMBERS);
             if (settings.Has(SessionSettings.MAX_LATENCY))
                 session.MaxLatency = settings.GetInt(SessionSettings.MAX_LATENCY);
             if (settings.Has(SessionSettings.LOGON_TIMEOUT))
@@ -160,7 +163,7 @@ namespace QuickFix
         protected void ProcessFixTDataDictionaries(SessionID sessionID, Dictionary settings, DataDictionaryProvider provider)
         {
             provider.AddTransportDataDictionary(sessionID.BeginString, createDataDictionary(sessionID, settings, SessionSettings.TRANSPORT_DATA_DICTIONARY, sessionID.BeginString));
-    
+
             foreach (KeyValuePair<string, string> setting in settings)
             {
                 if (setting.Key.StartsWith(SessionSettings.APP_DATA_DICTIONARY, System.StringComparison.CurrentCultureIgnoreCase))
