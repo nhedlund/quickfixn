@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Collections.Generic;
-using System.Globalization;
 using QuickFix.Fields.Converters;
 
 namespace QuickFix
@@ -14,7 +13,7 @@ namespace QuickFix
         #region Private Members
 
         private string name_;
-        private System.Collections.Generic.Dictionary<string, string> data_ = new System.Collections.Generic.Dictionary<string, string>();
+        private Dictionary<string, string> data_ = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         #endregion
 
@@ -46,7 +45,7 @@ namespace QuickFix
         { }
 
         public Dictionary(string name)
-            : this(name, new System.Collections.Generic.Dictionary<string,string>())
+            : this(name, new System.Collections.Generic.Dictionary<string,string>(StringComparer.OrdinalIgnoreCase))
         { }
 
         public Dictionary(Dictionary d)
@@ -56,7 +55,7 @@ namespace QuickFix
         public Dictionary(string name, System.Collections.Generic.Dictionary<string,string> data)
         {
             name_ = name;
-            data_ = new System.Collections.Generic.Dictionary<string, string>(data);
+            data_ = new System.Collections.Generic.Dictionary<string, string>(data, StringComparer.OrdinalIgnoreCase);
         }
 
         public string GetString(string key)
@@ -269,5 +268,10 @@ namespace QuickFix
         }
 
         #endregion
+
+        public override string ToString()
+        {
+            return data_.Select(s => $"{s.Key} = {s.Value}").Aggregate((s1, s2) => $"{s1}\n{s2}");
+        }
     }
 }

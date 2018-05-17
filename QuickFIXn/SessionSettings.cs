@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
@@ -145,11 +146,11 @@ namespace QuickFix
             {
                 dict.Merge(defaultSettings);
 
-                string sessionQualifier = SessionID.NOT_SET;
-                string senderSubID = SessionID.NOT_SET;
-                string senderLocID = SessionID.NOT_SET;
-                string targetSubID = SessionID.NOT_SET;
-                string targetLocID = SessionID.NOT_SET;
+                var sessionQualifier = SessionID.NOT_SET;
+                var senderSubID = SessionID.NOT_SET;
+                var senderLocID = SessionID.NOT_SET;
+                var targetSubID = SessionID.NOT_SET;
+                var targetLocID = SessionID.NOT_SET;
 
                 if (dict.Has(SESSION_QUALIFIER))
                     sessionQualifier = dict.GetString(SESSION_QUALIFIER);
@@ -161,8 +162,22 @@ namespace QuickFix
                     targetSubID = dict.GetString(TARGETSUBID);
                 if (dict.Has(TARGETLOCID))
                     targetLocID = dict.GetString(TARGETLOCID);
-                SessionID sessionID = new SessionID(dict.GetString(BEGINSTRING), dict.GetString(SENDERCOMPID), senderSubID, senderLocID, dict.GetString(TARGETCOMPID), targetSubID, targetLocID, sessionQualifier);
+
+                var sessionID = CreateSessionIdFromSettings(dict, senderSubID, senderLocID, targetSubID, targetLocID, sessionQualifier);
+
                 Set(sessionID, dict);
+            }
+        }
+
+        private static SessionID CreateSessionIdFromSettings(Dictionary dict, string senderSubID, string senderLocID, string targetSubID, string targetLocID, string sessionQualifier)
+        {
+            try
+            {
+                return new SessionID(dict.GetString(BEGINSTRING), dict.GetString(SENDERCOMPID), senderSubID, senderLocID, dict.GetString(TARGETCOMPID), targetSubID, targetLocID, sessionQualifier);
+            }
+            catch (Exception exception)
+            {
+                throw new Exception($"Could not create SessionID from session settings: {exception.Message}\nSettings:\n{dict}", exception);
             }
         }
 
