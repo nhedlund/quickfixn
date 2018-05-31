@@ -1,0 +1,8 @@
+#!/bin/sh
+
+export VERSION=$(dotnet --info | sed -n '/Microsoft .NET Core Shared Framework Host/,$p' | grep Version | awk '{print $3}')
+echo "NET Core Runtime: $VERSION"
+
+mkdir -p tmp
+rm -f tmp/*.trx
+dotnet test UnitTests/UnitTests.csproj --logger=trx --results-directory tmp
