@@ -1,0 +1,28 @@
+#!/bin/bash
+set -e
+
+# Get version
+NAME="QuickFix"
+VERSION="`cat VERSION`.`git rev-list HEAD --count`"
+echo "Publishing $NAME $VERSION"
+
+# Copy project to work dir
+WORKDIR=`mktemp -d 2>/dev/null || mktemp -d -t 'workdir'`
+echo "Work dir: $WORKDIR"
+
+# Set version on all projects
+cp -r ./ $WORKDIR
+pushd $WORKDIR > /dev/null
+find -name "*.csproj" | xargs sed -i -e "s/<Version>.*<\/Version>/<Version>$VERSION<\/Version>/"
+
+# Pack
+PACKDIR="$WORKDIR/packages"
+mkdir -p $PACKDIR
+dotnet pack -c Release -o $PACKDIR
+
+# Deploy
+echo DEPLOY-TODO
+
+# Cleanup
+popd > /dev/null
+rm -rf $WORKDIR
