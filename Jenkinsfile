@@ -13,7 +13,7 @@ pipeline {
     stage('Build') {
       steps {
         dir('$WORK_DIR') {
-          sh 'generate'
+          sh './generate'
           sh 'dotnet restore'
           sh 'dotnet build'
         }
