@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Install Ruby and Gem if missing
-sudo apt install -y ruby gem
+sudo apt-get install -y ruby gem
 
 # Ruby code generator script dependencies
 gem install --user-install --conservative nokogiri -v 1.6.8.1
