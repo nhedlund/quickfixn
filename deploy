@@ -21,8 +21,9 @@ mkdir -p $PACKDIR
 dotnet pack -c Release -o $PACKDIR
 
 # Deploy
-dotnet nuget push -k $MYGET_TOKEN -s https://www.myget.org/F/nfeed/api/v3/index.json packages/QuickFix*
-
-# Cleanup
+pushd packages > /dev/null
+find -name "QuickFix.*" | parallel --no-notice dotnet nuget push -k $MYGET_TOKEN -s https://www.myget.org/F/nfeed/api/v3/index.json
 popd > /dev/null
-rm -rf $WORKDIR
+
+# Exit
+popd > /dev/null
