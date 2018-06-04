@@ -1,9 +1,13 @@
-#!/bin/sh
+#!/bin/bash
 
 CONFIGURATION=$1
 
 [ -z $CONFIGURATION ] && CONFIGURATION=Release
 
+# Generate
+ruby generator/generate.rb
+
+# Build
 BUILD_CMD="dotnet build -c ${CONFIGURATION}"
 echo "Build command: $BUILD_CMD"
 exec $BUILD_CMD
