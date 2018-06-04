@@ -1,4 +1,4 @@
-﻿#if !MISSING_SYSTEMWEBUI
+#if !MISSING_SYSTEMWEBUI
 using System;
 using System.IO;
 using System.Net;

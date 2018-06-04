@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using QuickFix;
 using QuickFix.Fields;
 using System.Collections.Generic;

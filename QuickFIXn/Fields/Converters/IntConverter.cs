@@ -1,4 +1,4 @@
-﻿
+
 namespace QuickFix.Fields.Converters
 {
     /// <summary>

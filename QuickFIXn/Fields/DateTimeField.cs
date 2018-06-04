@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using QuickFix.Fields.Converters;
 
 namespace QuickFix.Fields

@@ -1,4 +1,4 @@
-﻿
+
 namespace QuickFix
 {
     /// <summary>

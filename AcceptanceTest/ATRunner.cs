@@ -1,4 +1,4 @@
-﻿using QuickFix;
+using QuickFix;
 
 namespace AcceptanceTest
 {

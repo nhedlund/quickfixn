@@ -1,4 +1,4 @@
-﻿$return_value=0
+$return_value=0
 $success_string="`r`nTest Suite Results:"
 
 function TestSpec

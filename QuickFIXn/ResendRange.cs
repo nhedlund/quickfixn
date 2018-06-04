@@ -1,4 +1,4 @@
-﻿namespace QuickFix
+namespace QuickFix
 {
     public class ResendRange
     {
