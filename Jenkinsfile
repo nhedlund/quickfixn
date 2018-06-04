@@ -1,7 +1,7 @@
 pipeline {
   agent {
     docker {
-      image 'microsoft/aspnetcore-build:2.0-stretch'
+      image 'microsoft/dotnet:2.1.300-sdk'
     }
   }
 
