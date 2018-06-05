@@ -2,7 +2,6 @@ pipeline {
   agent {
     dockerfile {
       filename 'Dockerfile.build'
-      label 'quickfixn-build'
     }
   }
 
