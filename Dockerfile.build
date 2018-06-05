@@ -1,6 +1,6 @@
 FROM microsoft/dotnet:2.1.300-sdk
 
-RUN apt-get update && apt-get install -y ruby ruby-nokogiri
+RUN apt-get update && apt-get install -y ruby ruby-nokogiri parallel
 
 VOLUME /root/.nuget/packages
 
