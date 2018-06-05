@@ -1,0 +1,8 @@
+FROM microsoft/dotnet:2.1.300-sdk
+
+RUN apt-get update && apt-get install -y ruby ruby-nokogiri
+
+VOLUME /root/.nuget/packages
+
+COPY . /app
+WORKDIR /app
