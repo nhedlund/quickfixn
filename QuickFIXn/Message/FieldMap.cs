@@ -306,6 +306,14 @@ namespace QuickFix
             return group;
         }
 
+        /// <summary>Try to get the integer value of a field, returns null if the field is not set.</summary>
+        /// <param name="tag">the FIX tag</param>
+        /// <returns>the integer value or null if it does not exist.</returns>
+        public int? TryGetInt(int tag)
+        {
+            return IsSetField(tag) ? GetInt(tag) : (int?) null;
+        }
+
         /// <summary>
         /// Gets the integer value of a field
         /// </summary>
@@ -326,6 +334,14 @@ namespace QuickFix
             {
                 throw new FieldNotFoundException(tag);
             }
+        }
+
+        /// <summary>Try to get the DateTime value of a field, returns null if the field is not set.</summary>
+        /// <param name="tag">the FIX tag</param>
+        /// <returns>the DateTime value or null if it does not exist.</returns>
+        public DateTime? TryGetDateTime(int tag)
+        {
+            return IsSetField(tag) ? GetDateTime(tag) : (DateTime?) null;
         }
 
         /// <summary>
@@ -394,6 +410,16 @@ namespace QuickFix
         }
 
         /// <summary>
+        /// Try get boolean value of a field or return null if it does not exist.
+        /// </summary>
+        /// <param name="tag">the FIX tag</param>
+        /// <returns>the boolean value or null</returns>
+        public bool? TryGetBoolean(int tag)
+        {
+            return IsSetField(tag) ? GetBoolean(tag) : (bool?) null;
+        }
+
+        /// <summary>
         /// Gets the boolean value of a field
         /// </summary>
         /// <param name="tag">the FIX tag</param>
@@ -441,6 +467,14 @@ namespace QuickFix
             {
                 throw new FieldNotFoundException(tag);
             }
+        }
+
+        /// <summary>Try get the char value of a field or return null if it does not exist.</summary>
+        /// <param name="tag">the FIX tag</param>
+        /// <returns>the char value or null</returns>
+        public char? TryGetChar(int tag)
+        {
+            return IsSetField(tag) ? GetChar(tag) : (char?) null;
         }
 
         /// <summary>
