@@ -94,6 +94,18 @@ namespace QuickFix
         }
 
         /// <summary>
+        /// Set optional field in the fieldmap, will overwrite field if it exists.
+        /// Only set if field value is not null.
+        /// </summary>
+        public void SetOptionalField<T>(FieldBase<T> field)
+        {
+            if (field.Obj == null)
+                return;
+
+            _fields[field.Tag] = field;
+        }
+
+        /// <summary>
         /// set many fields at the same time
         /// </summary>
         public void SetFields(IEnumerable<Fields.IField> fields)
